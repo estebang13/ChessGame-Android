@@ -1,5 +1,6 @@
 package com.example.estebanguerrero.chess_project;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import com.example.estebanguerrero.chess_project.chessCore.cell;
@@ -39,8 +40,7 @@ public class boardView extends View
         return y * width / 8 + Yzero;
     }
 
-    private void drawBoard(cell[][] board)
-    {
+    private void drawBoard(cell[][] board) throws NoSuchFieldException, ClassNotFoundException, IllegalAccessException {
         super.invalidate();
         Drawable boardImg = res.getDrawable(R.drawable.board);
         width =  canvas.getWidth();
@@ -54,7 +54,10 @@ public class boardView extends View
                 piece piece = board[x][y].getPiece();
                 if(piece != null)
                 {
-                    Drawable figure = res.getDrawable(piece.getImageResource());
+                    int id = getResources().getIdentifier(piece.getImageResource(), "drawable", getContext().getPackageName());
+                    Drawable pieceBoard = getResources().getDrawable(id);
+                    String var = piece.getImageResource();
+                    Drawable figure = pieceBoard;
                     figure.setBounds(getBoardX(x), getBoardY(y), getBoardX(x) + width/8, getBoardY(y) + width /8);
                     figure.draw(canvas);
                 }
@@ -134,7 +137,15 @@ public class boardView extends View
     protected void onDraw(Canvas canvas)
     {
         this.canvas = canvas;
-        this.drawBoard(core.getBoard());
+        try {
+            this.drawBoard(core.getBoard());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         if(pieceSelected)
             drawAvailableMoves(core.getBoard(), fromX, fromY);
     }
